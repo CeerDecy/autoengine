@@ -1,3 +1,3 @@
 # etov-core
 
-## Comming soon
+## Coming soon
