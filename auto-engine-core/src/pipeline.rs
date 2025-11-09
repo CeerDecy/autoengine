@@ -47,7 +47,12 @@ impl PipelineRunner {
 
 #[cfg(feature = "tauri")]
 impl PipelineRunner {
-    pub fn run(&self, token: &std::sync::Mutex<Arc<CancellationToken>>, is_loop: bool, app: AppHandle) -> Result<(), String> {
+    pub fn run(
+        &self,
+        token: &std::sync::Mutex<Arc<CancellationToken>>,
+        is_loop: bool,
+        app: AppHandle,
+    ) -> Result<(), String> {
         handle_pipeline(
             token,
             self.dir_path.clone(),
@@ -62,7 +67,11 @@ impl PipelineRunner {
 
 #[cfg(not(feature = "tauri"))]
 impl PipelineRunner {
-    pub fn run(&self, token: &std::sync::Mutex<Arc<CancellationToken>>, is_loop: bool) -> Result<(), String> {
+    pub fn run(
+        &self,
+        token: &std::sync::Mutex<Arc<CancellationToken>>,
+        is_loop: bool,
+    ) -> Result<(), String> {
         handle_pipeline(
             token,
             self.dir_path.clone(),

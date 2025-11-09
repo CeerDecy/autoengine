@@ -1,0 +1,15 @@
+[package]
+name = "auto-engine-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+
+[dependencies]
+auto-engine-core = { path = "../auto-engine-core", features = ["types"] }
+clap = {version = "4.5.51", features = ["derive"]}
+clap_derive = { version = "4.0.0-rc.1" }
+serde = {version = "1", features = ["derive"]}
+serde_json = "1"
+serde_yaml = "0.9.33"
+json5 = "0.4.1"

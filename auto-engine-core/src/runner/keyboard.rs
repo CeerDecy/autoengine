@@ -12,6 +12,12 @@ pub struct KeyboardRunner {
     enigo: Arc<Mutex<Enigo>>,
 }
 
+impl Default for KeyboardRunner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KeyboardRunner {
     #[cfg(feature = "tauri")]
     pub fn new(app: Arc<AppHandle>) -> Self {

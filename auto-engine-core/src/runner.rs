@@ -34,6 +34,12 @@ pub struct ActionRunner {
     image_recognition: ImageRecognition,
 }
 
+impl Default for ActionRunner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ActionRunner {
     #[cfg(feature = "tauri")]
     pub fn new(app: Arc<AppHandle>) -> Self {

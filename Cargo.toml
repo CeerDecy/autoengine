@@ -1,2 +1,8 @@
 [workspace]
-members = ["auto-engine-core"]
+members = ["auto-engine-core", "auto-engine-cli"]
+
+[workspace.package]
+version = "0.2.1"
+edition = "2024"
+rust-version = "1.89.0"
+authors = ["ceerdecy"]
