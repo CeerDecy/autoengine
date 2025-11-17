@@ -81,5 +81,8 @@ Disable features in `Cargo.toml` as needed, e.g. `default-features = false` for 
 2. Add tests (`cargo test`) whenever you introduce new node types, conditions, or utilities.
 3. Document new pipeline actions or DSL additions in this README.
 
+## Miantainer
+This project is miantained by CeerDecy(Yuan Haonan), email: ceerdecy@gmail.com
+
 ## License
 This project is licensed under the [Apache License 2.0](LICENSE).
