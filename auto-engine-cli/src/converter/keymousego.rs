@@ -6,7 +6,6 @@ use std::path::PathBuf;
 
 pub enum ConverterFrom {
     KeyMouseGo,
-    QuickInput,
 }
 pub struct Converter {
     content: String,

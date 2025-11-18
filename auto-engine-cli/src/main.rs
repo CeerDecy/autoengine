@@ -1,8 +1,8 @@
 use crate::cmd::{Cli, Commands, ConfigType};
 use crate::converter::keymousego::{Converter, ConverterFrom};
+use crate::converter::quickinput;
 use clap::Parser;
 use std::path::PathBuf;
-use crate::converter::quickinput;
 
 mod cmd;
 mod converter;
@@ -20,11 +20,10 @@ fn main() {
                 let content = serde_yaml::to_string(&result).unwrap();
 
                 println!("{}", content);
-            },
+            }
             ConfigType::QuickInput { config } => {
                 let path = PathBuf::from(config);
-                let result = quickinput::Converter::new(&path)
-                    .convert().unwrap();
+                let result = quickinput::Converter::new(&path).convert().unwrap();
                 let content = serde_yaml::to_string(&result).unwrap();
                 println!("{}", content);
             }

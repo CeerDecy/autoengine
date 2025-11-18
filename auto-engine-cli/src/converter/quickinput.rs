@@ -3,7 +3,6 @@ use crate::converter::types::quickinput::{Action, QuickInputMacro};
 use auto_engine_core::types::{
     KeyBoardKeyMode, KeyBoardParams, KeyCode, Node, Pipeline, Stage, ToKeyCode,
 };
-use std::any::Any;
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
@@ -74,29 +73,25 @@ pub fn parse_action_params(action: &Action) -> Option<(KeyBoardParams, String)> 
     }
 
     let key = virtual_key_to_string(action.vk.unwrap());
-    let key = if key.is_none() {
-        return None;
-    } else {
-        key.unwrap()
-    };
+    let key = key?;
 
     let params: KeyBoardParams = match action.state.unwrap() {
         // release
         0 => KeyBoardParams {
             mode: KeyBoardKeyMode::Up,
-            key: key.to_key_code().unwrap_or_else(|| KeyCode::A),
+            key: key.to_key_code().unwrap_or(KeyCode::A),
             value: None,
         },
         // press
         1 => KeyBoardParams {
             mode: KeyBoardKeyMode::Down,
-            key: key.to_key_code().unwrap_or_else(|| KeyCode::A),
+            key: key.to_key_code().unwrap_or(KeyCode::A),
             value: None,
         },
         // click
         2 => KeyBoardParams {
             mode: KeyBoardKeyMode::Click,
-            key: key.to_key_code().unwrap_or_else(|| KeyCode::A),
+            key: key.to_key_code().unwrap_or(KeyCode::A),
             value: None,
         },
         _ => return None,
