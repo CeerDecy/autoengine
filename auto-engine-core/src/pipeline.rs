@@ -1,6 +1,7 @@
 use crate::context::Context;
 #[cfg(feature = "tauri")]
 use crate::event;
+use crate::event::TaskStatus;
 use crate::runner::ActionRunner;
 use crate::types::{Node, Pipeline, Stage};
 use std::collections::HashMap;
@@ -9,7 +10,6 @@ use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "tauri")]
 use tauri::{AppHandle, Emitter};
-// use tauri_app_common::app::AppState;
 use tokio::sync::Mutex;
 use tokio::task::JoinSet;
 use tokio::time;
@@ -109,6 +109,15 @@ fn handle_pipeline(
             let mut next_tick = Instant::now();
 
             loop {
+                app_handle
+                    .emit(
+                        event::TASK_EVENT,
+                        event::TaskEventPayload {
+                            status: TaskStatus::Running,
+                        },
+                    )
+                    .unwrap();
+
                 let pipeline = pipeline.clone();
                 let dir_path = dir_path.clone();
                 let context = Arc::new(Context::new(dir_path).with_screen_scale(rate));
@@ -131,6 +140,15 @@ fn handle_pipeline(
                         }
                     };
                 }
+
+                app_handle
+                    .emit(
+                        event::TASK_EVENT,
+                        event::TaskEventPayload {
+                            status: TaskStatus::Finished,
+                        },
+                    )
+                    .unwrap();
 
                 if !is_loop {
                     return;
