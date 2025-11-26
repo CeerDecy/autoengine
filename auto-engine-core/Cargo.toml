@@ -19,6 +19,7 @@ tokio-util = "0.7.16"
 screenshots = "0.8.10"
 enigo = { version = "0.6.1", features = ["tokio"] }
 schemars = "1.1.0"
+async-trait = "0.1.89"
 
 [features]
 default = ["types", "context", "event", "pipeline", "runner", "utils"]

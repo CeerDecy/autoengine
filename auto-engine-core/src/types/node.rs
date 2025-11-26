@@ -7,10 +7,7 @@ pub struct NodeName {
     pub en: String,
 }
 
-pub trait NodeDefine<T, R>
-where
-    R: NodeRunner<T>,
-{
+pub trait NodeDefine {
     fn action_type(&self) -> String;
 
     fn name(&self) -> NodeName;
@@ -20,10 +17,13 @@ where
     fn output_schema(&self) -> Schema;
 
     fn input_schema(&self) -> Schema;
-
-    fn node_runner(&self) -> R;
 }
 
-pub trait NodeRunner<T> {
-    fn run(&self, ctx: Context, param: T) -> Result<(), String>;
+#[async_trait::async_trait]
+pub trait NodeRunner {
+    async fn run(&self, ctx: &Context, param: serde_json::Value) -> Result<(), String>;
+}
+
+pub trait NodeRunnerFactory: Send + Sync {
+    fn create(&self) -> Box<dyn NodeRunner>;
 }

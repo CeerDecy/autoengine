@@ -1,11 +1,8 @@
-use crate::{
-    node::start::runner::{Params, StartRunner},
-    types::node::{NodeDefine, NodeName},
-};
+use crate::types::node::{NodeDefine, NodeName};
 
 pub struct Start;
 
-impl NodeDefine<Params, StartRunner> for Start {
+impl NodeDefine for Start {
     fn action_type(&self) -> String {
         String::from("Start")
     }
@@ -24,14 +21,10 @@ impl NodeDefine<Params, StartRunner> for Start {
     }
 
     fn output_schema(&self) -> schemars::Schema {
-        todo!()
+        Default::default()
     }
 
     fn input_schema(&self) -> schemars::Schema {
-        todo!()
-    }
-
-    fn node_runner(&self) -> StartRunner {
-        todo!()
+        Default::default()
     }
 }

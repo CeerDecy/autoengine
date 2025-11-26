@@ -14,3 +14,5 @@ pub mod schema;
 pub mod types;
 #[cfg(feature = "utils")]
 pub mod utils;
+
+pub mod register;
