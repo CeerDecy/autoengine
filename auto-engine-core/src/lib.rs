@@ -21,6 +21,8 @@ pub mod types;
 #[cfg(feature = "utils")]
 pub mod utils;
 
+pub mod workflow;
+
 #[cfg(feature = "types")]
 pub mod register;
 
