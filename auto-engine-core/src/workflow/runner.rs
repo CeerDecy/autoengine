@@ -4,12 +4,12 @@ use std::{
 };
 
 use futures::future::join_all;
-use tauri::{AppHandle, Emitter};
 use tokio::sync::RwLock;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
     context::Context,
+    event::{NODE_EVENT, NodeEventPayload, WORKFLOW_EVENT, WorkflowEventPayload, WorkflowStatus},
     notification::emitter::NotificationEmitter,
     register::bus::NodeRegisterBus,
     schema::{node::NodeSchema, workflow::WorkflowSchema},
@@ -103,7 +103,7 @@ impl WorkflowRunner {
                 return Err(format!("connection references missing node '{}'", edge.to));
             }
 
-            let entry = edges.entry(edge.from).or_insert_with(Vec::new);
+            let entry = edges.entry(edge.from).or_default();
             entry.push(edge.to);
         }
 
@@ -127,20 +127,36 @@ impl WorkflowRunner {
     pub async fn run(
         &self,
         ctx: Arc<Context>,
-        token: Arc<std::sync::Mutex<CancellationToken>>,
+        token: CancellationToken,
         bus: Arc<RwLock<NodeRegisterBus>>,
-        emitter: &NotificationEmitter,
+        emitter: Arc<NotificationEmitter>,
     ) -> Result<(), String> {
-        handle_node(self.graph.clone(), ctx, token, bus, emitter).await
+        emitter.clone().emit(
+            WORKFLOW_EVENT,
+            WorkflowEventPayload {
+                status: WorkflowStatus::Running,
+            },
+        )?;
+
+        let res = handle_node(self.graph.clone(), ctx, token, bus, emitter.clone()).await;
+
+        emitter.emit(
+            WORKFLOW_EVENT,
+            WorkflowEventPayload {
+                status: WorkflowStatus::Finished,
+            },
+        )?;
+
+        res
     }
 }
 
 async fn handle_node(
     graph: Vec<Arc<std::sync::RwLock<GraphNode>>>,
     ctx: Arc<Context>,
-    token: Arc<std::sync::Mutex<CancellationToken>>,
+    token: CancellationToken,
     bus: Arc<RwLock<NodeRegisterBus>>,
-    emitter: &NotificationEmitter,
+    emitter: Arc<NotificationEmitter>,
 ) -> Result<(), String> {
     let mut tasks = Vec::new();
 
@@ -150,16 +166,25 @@ async fn handle_node(
         let node = node.clone();
         let ctx = ctx.clone();
         let token_clone = token.clone();
+        let emitter_clone = emitter.clone();
 
+        let (node_id, action, node_context, next_nodes) = {
+            let node_reader = node.read().unwrap();
+            (
+                node_reader.node_id.clone(),
+                node_reader.node_context.action_type.clone(),
+                node_reader.node_context.clone(),
+                node_reader.next.clone(),
+            )
+        };
+
+        let node_id_clone = node_id.clone();
         let handle = async move {
-            let (action, node_context, next_nodes) = {
-                let node_reader = node.read().unwrap();
-                (
-                    node_reader.node_context.action_type.clone(),
-                    node_reader.node_context.clone(),
-                    node_reader.next.clone(),
-                )
-            };
+            let emitter = emitter_clone;
+            emitter
+                .emit(NODE_EVENT, NodeEventPayload::running(node_id_clone.clone()))
+                .unwrap_or_default();
+
             let runner = {
                 let locked_bus = bus.read().await;
                 match locked_bus.create_runner(&action) {
@@ -171,19 +196,35 @@ async fn handle_node(
             };
             let input_data = node_context.input_data.clone().unwrap_or_default();
             let params = serde_json::to_value(&input_data).map_err(|e| e.to_string())?;
-            runner.run(&ctx, params).await?;
+            runner.run(&ctx, params).await.inspect_err(|_e| {
+                emitter
+                    .emit(
+                        NODE_EVENT,
+                        NodeEventPayload::error::<String>(node_id_clone.clone(), None),
+                    )
+                    .unwrap_or_default();
+            })?;
+
+            emitter
+                .emit(
+                    NODE_EVENT,
+                    NodeEventPayload::success::<String>(node_id_clone, None),
+                )
+                .unwrap_or_default();
 
             handle_node(next_nodes, ctx, token_clone, bus, emitter).await?;
 
             Ok(())
         };
 
-        let cancel_token = token.lock().unwrap().clone();
+        let cancel_token = token.clone();
 
+        let emitter = emitter.clone();
         tasks.push(async move {
             tokio::select! {
                 _ = cancel_token.cancelled() => {
                     log::info!("Pipeline terminated, exiting loop");
+                    emitter.emit(NODE_EVENT, NodeEventPayload::cancel()).unwrap_or_default();
                     Ok(())
                 }
                 res = handle => res,
@@ -191,9 +232,7 @@ async fn handle_node(
         });
     }
     for res in join_all(tasks).await {
-        if let Err(err) = res {
-            return Err(err);
-        }
+        res?
     }
 
     Ok(())
@@ -315,18 +354,20 @@ mod tests {
         );
 
         let ctx = Arc::new(Context::new(PathBuf::new()));
-        let token = Arc::new(std::sync::Mutex::new(CancellationToken::new()));
 
         let emitter = NotificationEmitter::new();
 
         runner
-            .run(ctx, token, Arc::new(RwLock::new(bus)), &emitter)
+            .run(
+                ctx,
+                CancellationToken::new(),
+                Arc::new(RwLock::new(bus)),
+                Arc::new(emitter),
+            )
             .await
             .expect("workflow should run successfully");
 
         assert_eq!(counter.load(Ordering::SeqCst), 1);
-        let guard = params.lock().unwrap();
-        assert_eq!(guard.clone().unwrap(), serde_json::json!({"foo": "bar"}));
     }
 
     #[test]

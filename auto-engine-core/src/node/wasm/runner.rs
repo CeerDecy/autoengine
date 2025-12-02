@@ -1,7 +1,7 @@
+use crate::Plugin;
 use crate::context::Context;
 use crate::plugin::loader::PluginState;
 use crate::types::node::{NodeRunner, NodeRunnerFactory};
-use crate::Plugin;
 use std::sync::{Arc, Mutex};
 use wasmtime::Store;
 
@@ -46,7 +46,9 @@ pub struct WasmRunnerFactory {
 
 impl WasmRunnerFactory {
     pub(crate) fn new(store: Store<PluginState>, plugin: Plugin) -> Self {
-        Self { runtime: Arc::new(Mutex::new(PluginRuntime { store, plugin })) }
+        Self {
+            runtime: Arc::new(Mutex::new(PluginRuntime { store, plugin })),
+        }
     }
 }
 

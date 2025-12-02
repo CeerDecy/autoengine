@@ -14,6 +14,8 @@ impl TauriEmitter {
 
 impl AutoEngineEmitter for TauriEmitter {
     fn emit(&self, event: &str, payload: serde_json::Value) -> Result<(), String> {
-        self.app_handle.emit(event, payload).map_err(|e|e.to_string())
+        self.app_handle
+            .emit(event, payload)
+            .map_err(|e| e.to_string())
     }
 }

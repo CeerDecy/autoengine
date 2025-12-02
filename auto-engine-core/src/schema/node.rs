@@ -3,10 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::types::{
-    MetaData,
-    node::{I18nValue, NodeType},
-};
+use crate::types::{MetaData, node::NodeType};
 
 type NodeParameters = HashMap<Value, Value>;
 

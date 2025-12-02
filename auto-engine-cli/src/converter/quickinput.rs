@@ -48,7 +48,7 @@ impl Converter {
                         let node = Node::KeyBoard {
                             metadata: MetaData {
                                 name: format!("key-{}-{}", index, key),
-                                duration: self.duration.clone(),
+                                duration: self.duration,
                                 retry: Some(0),
                                 interval: Some(0),
                                 conditions: self.conditions.clone(),

@@ -5,6 +5,7 @@ use crate::{
 
 pub struct Params;
 
+#[derive(Default)]
 pub struct StartRunner;
 
 impl StartRunner {
@@ -22,6 +23,7 @@ impl NodeRunner for StartRunner {
     }
 }
 
+#[derive(Default)]
 pub struct StartRunnerFactory;
 
 impl StartRunnerFactory {

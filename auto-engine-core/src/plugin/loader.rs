@@ -47,7 +47,7 @@ impl PluginLoader {
         Self {}
     }
 
-    pub async  fn load_plugins(
+    pub async fn load_plugins(
         &mut self,
         plugin_folder: PathBuf,
         bus: Arc<RwLock<NodeRegisterBus>>,

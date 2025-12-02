@@ -6,28 +6,18 @@ use crate::types::node::{NodeDefine, NodeRunner, NodeRunnerFactory};
 use std::collections::HashMap;
 use std::sync::Arc;
 
+#[derive(Default)]
 pub struct NodeRegisterBus {
     nodes: HashMap<String, Arc<Box<dyn NodeDefine>>>,
     runner_factories: HashMap<String, Arc<Box<dyn NodeRunnerFactory>>>,
 }
 
-impl Default for NodeRegisterBus {
-    fn default() -> Self {
+impl NodeRegisterBus {
+    pub fn new() -> Self {
         Self {
             nodes: HashMap::new(),
             runner_factories: HashMap::new(),
         }
-    }
-}
-
-impl NodeRegisterBus {
-    pub fn new() -> Self {
-        let bus = Self {
-            nodes: HashMap::new(),
-            runner_factories: HashMap::new(),
-        };
-
-        bus
     }
 
     pub fn with_internal_nodes(mut self) -> NodeRegisterBus {

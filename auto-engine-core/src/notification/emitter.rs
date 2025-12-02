@@ -4,8 +4,9 @@ pub trait Emitter {
     fn emit(&self, event: &str, payload: Value) -> Result<(), String>;
 }
 
+#[derive(Default)]
 pub struct NotificationEmitter {
-    emitters: Vec<Box<dyn Emitter>>,
+    emitters: Vec<Box<dyn Emitter + Send + Sync>>,
 }
 
 impl NotificationEmitter {
@@ -13,7 +14,7 @@ impl NotificationEmitter {
         Self { emitters: vec![] }
     }
 
-    pub fn with_emitter(mut self, emitter: Box<dyn Emitter>) -> Self {
+    pub fn with_emitter(mut self, emitter: Box<dyn Emitter + Send + Sync>) -> Self {
         self.emitters.push(emitter);
         self
     }

@@ -2,8 +2,8 @@ use enigo::{Coordinate, Enigo, Mouse};
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
-use crate::{context::Context, types::node::NodeRunner, utils::parse_variables};
 use crate::types::node::NodeRunnerFactory;
+use crate::{context::Context, types::node::NodeRunner, utils::parse_variables};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MouseMoveParams {
@@ -55,7 +55,7 @@ impl NodeRunner for MouseMoveRunner {
     }
 }
 
-
+#[derive(Default)]
 pub struct MouseMoveNodeFactory;
 
 impl MouseMoveNodeFactory {

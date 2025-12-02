@@ -1,6 +1,7 @@
 use crate::types::node::{I18nValue, NodeDefine};
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct MouseMoveNode {}
 
 impl MouseMoveNode {
