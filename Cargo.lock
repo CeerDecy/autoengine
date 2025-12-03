@@ -179,7 +179,7 @@ dependencies = [
 
 [[package]]
 name = "auto-engine-core"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "async-trait",
