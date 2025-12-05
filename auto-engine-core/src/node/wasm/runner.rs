@@ -1,7 +1,7 @@
 use crate::Plugin;
 use crate::context::Context;
 use crate::plugin::loader::PluginState;
-use crate::types::node::{NodeRunner, NodeRunnerFactory};
+use crate::types::node::{NodeRunner, NodeRunnerControl, NodeRunnerController, NodeRunnerFactory};
 use std::sync::{Arc, Mutex};
 use wasmtime::Store;
 
@@ -18,6 +18,8 @@ pub struct WasmRunner {
 
 #[async_trait::async_trait]
 impl NodeRunner for WasmRunner {
+    type ParamType = serde_json::Value;
+
     async fn run(&mut self, _ctx: &Context, _param: serde_json::Value) -> Result<(), String> {
         let mut runtime = self
             .runtime
@@ -53,9 +55,9 @@ impl WasmRunnerFactory {
 }
 
 impl NodeRunnerFactory for WasmRunnerFactory {
-    fn create(&self) -> Box<dyn NodeRunner> {
-        Box::new(WasmRunner {
+    fn create(&self) -> Box<dyn NodeRunnerControl> {
+        Box::new(NodeRunnerController::new(WasmRunner {
             runtime: self.runtime.clone(),
-        })
+        }))
     }
 }

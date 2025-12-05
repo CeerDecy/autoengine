@@ -6,6 +6,7 @@ use crate::{
     context::Context,
     types::node::{NodeRunner, NodeRunnerFactory},
 };
+use crate::types::node::{NodeRunnerControl, NodeRunnerController};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MouseClickParams {
@@ -30,8 +31,9 @@ impl MouseClickRunner {
 
 #[async_trait::async_trait]
 impl NodeRunner for MouseClickRunner {
-    async fn run(&mut self, _ctx: &Context, values: serde_json::Value) -> Result<(), String> {
-        let params: MouseClickParams = serde_json::from_value(values).map_err(|e| e.to_string())?;
+    type ParamType = MouseClickParams;
+
+    async fn run(&mut self, _ctx: &Context, params: Self::ParamType) -> Result<(), String> {
 
         let mut enigo = self
             .enigo
@@ -63,7 +65,7 @@ impl MouseClickNodeFactory {
 }
 
 impl NodeRunnerFactory for MouseClickNodeFactory {
-    fn create(&self) -> Box<dyn NodeRunner> {
-        Box::new(MouseClickRunner::new())
+    fn create(&self) -> Box<dyn NodeRunnerControl> {
+        Box::new(NodeRunnerController::new(MouseClickRunner::new()) )
     }
 }

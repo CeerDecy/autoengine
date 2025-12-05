@@ -8,7 +8,7 @@ use crate::node::mouse_move::node::MouseMoveNode;
 use crate::node::mouse_move::runner::MouseMoveNodeFactory;
 use crate::node::start::node::StartNode;
 use crate::node::start::runner::StartRunnerFactory;
-use crate::types::node::{NodeDefine, NodeRunner, NodeRunnerFactory};
+use crate::types::node::{NodeDefine, NodeRunner, NodeRunnerControl, NodeRunnerFactory};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -79,7 +79,7 @@ impl NodeRegisterBus {
         Some(self.nodes.get(action_type)?.clone())
     }
 
-    pub fn create_runner(&self, key: &str) -> Option<Box<dyn NodeRunner>> {
+    pub fn create_runner(&self, key: &str) -> Option<Box<dyn NodeRunnerControl>> {
         let factory = self.runner_factories.get(key)?.clone();
         Some(factory.create())
     }

@@ -25,6 +25,7 @@ pub async fn parse_variables(context: &Context, input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
     use super::*;
     use std::path::PathBuf;
 

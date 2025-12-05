@@ -2,6 +2,7 @@ use crate::{
     context::Context,
     types::node::{NodeRunner, NodeRunnerFactory},
 };
+use crate::types::node::{NodeRunnerControl, NodeRunnerController};
 
 pub struct Params;
 
@@ -16,6 +17,8 @@ impl StartRunner {
 
 #[async_trait::async_trait]
 impl NodeRunner for StartRunner {
+    type ParamType = serde_json::Value;
+
     async fn run(&mut self, _ctx: &Context, _param: serde_json::Value) -> Result<(), String> {
         // nothing need to do
         log::info!("Start workflow!");
@@ -33,7 +36,7 @@ impl StartRunnerFactory {
 }
 
 impl NodeRunnerFactory for StartRunnerFactory {
-    fn create(&self) -> Box<dyn NodeRunner> {
-        Box::new(StartRunner::new())
+    fn create(&self) -> Box<dyn NodeRunnerControl> {
+        Box::new(NodeRunnerController::new(StartRunner::new()))
     }
 }

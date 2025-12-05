@@ -2,13 +2,13 @@ use enigo::{Coordinate, Enigo, Mouse};
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
-use crate::types::node::NodeRunnerFactory;
+use crate::types::node::{NodeRunnerControl, NodeRunnerController, NodeRunnerFactory};
 use crate::{context::Context, types::node::NodeRunner, utils::parse_variables};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MouseMoveParams {
-    pub x: String,
-    pub y: String,
+    pub x: i32,
+    pub y: i32,
 }
 
 #[derive(Clone)]
@@ -29,17 +29,12 @@ impl MouseMoveRunner {
 
 #[async_trait::async_trait]
 impl NodeRunner for MouseMoveRunner {
-    async fn run(&mut self, ctx: &Context, values: serde_json::Value) -> Result<(), String> {
-        let params: MouseMoveParams = serde_json::from_value(values).map_err(|e| e.to_string())?;
-        let x: i32 = parse_variables(ctx, &params.x)
-            .await
-            .parse()
-            .map_err(|e| format!("Failed to parse {} to f64, error: {}", params.x, e))?;
+    type ParamType = MouseMoveParams;
 
-        let y: i32 = parse_variables(ctx, &params.y)
-            .await
-            .parse()
-            .map_err(|e| format!("Failed to parse {} to f64, error: {}", params.y, e))?;
+    async fn run(&mut self, ctx: &Context, params: Self::ParamType) -> Result<(), String> {
+        let x: i32 = params.x;
+
+        let y: i32 = params.y;
 
         let rate = ctx.screen_scale;
 
@@ -65,7 +60,7 @@ impl MouseMoveNodeFactory {
 }
 
 impl NodeRunnerFactory for MouseMoveNodeFactory {
-    fn create(&self) -> Box<dyn NodeRunner> {
-        Box::new(MouseMoveRunner::new())
+    fn create(&self) -> Box<dyn NodeRunnerControl> {
+        Box::new(NodeRunnerController::new(MouseMoveRunner::new()))
     }
 }
