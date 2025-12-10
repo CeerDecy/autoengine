@@ -1,5 +1,6 @@
 use crate::types::node::NodeRunnerControl;
 use std::pin::Pin;
+use std::sync::atomic::AtomicUsize;
 use std::time::Duration;
 use std::{
     collections::{HashMap, HashSet},
@@ -23,6 +24,7 @@ struct GraphNode {
     pub node_id: String,
     pub node_context: NodeSchema,
     pub next: Vec<Arc<std::sync::RwLock<GraphNode>>>,
+    pub wait_count: Arc<AtomicUsize>,
 }
 
 fn build_graph(
@@ -52,6 +54,13 @@ fn build_graph(
             .get(next_node_id)
             .ok_or_else(|| format!("connection references missing node '{next_node_id}'"))?
             .clone();
+
+        {
+            let node_writer = rc_node.write().map_err(|e| e.to_string())?;
+            node_writer
+                .wait_count
+                .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        }
 
         build_graph(next_node_id, graph_nodes, edges, visited, visiting)?;
 
@@ -91,6 +100,7 @@ impl WorkflowRunner {
                     node_id: key,
                     node_context,
                     next: vec![],
+                    wait_count: Arc::new(AtomicUsize::new(0)),
                 })),
             );
         }
@@ -195,12 +205,13 @@ fn handle_nod(
             let emitter_clone = emitter.clone();
             let emitter = emitter.clone();
 
-            let (node_id, node_schema, next_node) = {
+            let (node_id, node_schema, next_node, wait_count) = {
                 let node_read = node.read().map_err(|e| e.to_string())?;
                 (
                     node_read.node_id.clone(),
                     node_read.node_context.clone(),
                     node_read.next.clone(),
+                    node_read.wait_count.clone(),
                 )
             };
 
@@ -231,7 +242,16 @@ fn handle_nod(
                     .emit(NODE_EVENT, NodeEventPayload::running(node_id.clone()))
                     .unwrap_or_default();
 
-                log::info!("handle run {}", action);
+                log::info!("wait_count {} {}", action, wait_count.load(std::sync::atomic::Ordering::SeqCst));
+
+                if wait_count.load(std::sync::atomic::Ordering::SeqCst) > 1 {
+                    wait_count.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+                    log::info!("waiting for {}", wait_count.load(std::sync::atomic::Ordering::SeqCst));
+                    emitter
+                        .emit(NODE_EVENT, NodeEventPayload::waiting(node_id.clone()))
+                        .unwrap_or_default();
+                    return Ok(None);
+                }
 
                 let mut result: Result<Option<HashMap<String, serde_json::Value>>, String> =
                     Ok(None);

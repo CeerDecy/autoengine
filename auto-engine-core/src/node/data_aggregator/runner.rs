@@ -31,32 +31,19 @@ impl NodeRunner for DataAggregatorRunner {
         ctx: &Context,
         param: Self::ParamType,
     ) -> Result<Option<HashMap<String, Value>>, String> {
-        log::info!("Running data aggregator with mode: {:?}", param.mode);
-
         {
             let map = ctx.string_value.read().await;
             log::info!("map: {:?}", map.keys());
         }
-        let mut values;
+        let mut values= vec![];
 
-        loop {
-            values = vec![];
-            // Collect values from all sources
-            for source in param.sources.iter() {
-                match ctx.get_value_parse(source).await {
-                    Some(value) => values.push(value),
-                    None => {
-                        log::info!("Waiting for source: {}", source);
-                        break
-                    }
+        for source in param.sources.iter() {
+            match ctx.get_value_parse(source).await {
+                Some(value) => values.push(value),
+                None => {
+                    values.push(Value::Null);
                 }
             }
-
-            if values.len() == param.sources.len() {
-                break;
-            }
-
-            tokio::time::sleep(Duration::from_secs(1)).await;
         }
 
         let count = values.len();
