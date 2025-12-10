@@ -29,7 +29,7 @@ impl NodeDefine for StartNode {
     fn category(&self) -> Option<I18nValue> {
         Some(I18nValue {
             zh: String::from("基础节点"),
-            en: String::from("Base node"),
+            en: String::from("Basic Node"),
         })
     }
 
