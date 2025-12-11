@@ -235,6 +235,7 @@ fn handle_nod(
             };
             let run_input = node_schema.input_data.clone().unwrap_or_default();
             let retry = node_schema.metadata.retry.unwrap_or(0);
+            let node_name = node_schema.metadata.name;
             let delay = node_schema.metadata.duration.unwrap_or(0) as u64;
 
             let handle = async move {
@@ -263,7 +264,7 @@ fn handle_nod(
                         match runner
                             .run(
                                 &ctx,
-                                &action,
+                                &node_name,
                                 run_input.clone(),
                                 node.input_schema().clone(),
                             )
@@ -297,7 +298,7 @@ fn handle_nod(
                         match runner
                             .run(
                                 &ctx,
-                                &action,
+                                &node_name,
                                 run_input.clone(),
                                 node.input_schema().clone(),
                             )

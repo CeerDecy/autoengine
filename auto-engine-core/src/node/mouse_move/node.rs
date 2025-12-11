@@ -71,6 +71,17 @@ impl NodeDefine for MouseMoveNode {
                 enums: vec![],
                 default: None,
             },
+            SchemaField {
+                name: "hidpi".to_owned(),
+                field_type: FieldType::String,
+                item_type: None,
+                description: Some(I18nValue {
+                    zh: "HiDPI ".to_owned(),
+                    en: "HiDPI".to_owned(),
+                }),
+                enums: vec!["100%".to_string(),"200%".to_string(),"400%".to_string()],
+                default: Some("100%".to_string()),
+            },
         ]
     }
 }
