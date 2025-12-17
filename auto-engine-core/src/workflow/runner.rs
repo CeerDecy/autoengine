@@ -437,7 +437,7 @@ mod tests {
         schema::{node::Position, workflow::Connection},
         types::{
             MetaData,
-            node::{I18nValue, NodeDefine, NodeRunner, NodeRunnerFactory, SchemaField},
+            node::{I18nValue, NodeDefine, NodeRunner, NodeRunnerFactory},
         },
     };
     use serde_json::Value as JsonValue;
@@ -448,6 +448,7 @@ mod tests {
         atomic::{AtomicUsize, Ordering},
     };
     use tokio_util::sync::CancellationToken;
+    use crate::types::field::SchemaField;
 
     fn metadata(name: &str) -> MetaData {
         MetaData {

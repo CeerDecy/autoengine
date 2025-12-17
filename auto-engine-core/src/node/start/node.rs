@@ -1,5 +1,6 @@
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::node::{I18nValue, NodeDefine};
 use std::collections::HashMap;
+use crate::types::field::{FieldType, SchemaField};
 
 pub struct StartNode;
 
@@ -55,6 +56,7 @@ impl NodeDefine for StartNode {
                 description: None,
                 enums: vec![],
                 default: None,
+                condition: None,
             });
         }
 
@@ -72,6 +74,7 @@ impl NodeDefine for StartNode {
             }),
             enums: vec![],
             default: None,
+            condition: None,
         }]
     }
 }

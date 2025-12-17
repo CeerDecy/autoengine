@@ -1,5 +1,6 @@
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::node::{I18nValue, NodeDefine};
 use std::collections::HashMap;
+use crate::types::field::{FieldType, SchemaField};
 
 #[derive(Default)]
 pub struct TimeWaitNode;
@@ -57,6 +58,7 @@ impl NodeDefine for TimeWaitNode {
             }),
             enums: vec![],
             default: None,
+            condition: None,
         }]
     }
 }

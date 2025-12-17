@@ -1,12 +1,12 @@
 use crate::register::bus::NodeRegisterBus;
 use crate::schema::node::NodeSchema;
-use crate::types::node::SchemaField;
 use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use tokio::sync::RwLock;
+use crate::types::field::SchemaField;
 
 #[derive(Debug, Clone)]
 pub struct GraphNode {
@@ -103,8 +103,9 @@ fn get_prev_node_outputs(
 mod tests {
     use super::*;
     use crate::schema::node::Position;
+    use crate::types::field::{FieldType, SchemaField};
     use crate::types::MetaData;
-    use crate::types::node::{FieldType, I18nValue, NodeDefine};
+    use crate::types::node::{I18nValue, NodeDefine};
 
     fn create_test_metadata(name: &str) -> MetaData {
         MetaData {
@@ -126,6 +127,7 @@ mod tests {
             description: None,
             enums: vec![],
             default: None,
+            condition: None,
         }
     }
 

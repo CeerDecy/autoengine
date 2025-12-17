@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::field::{FieldType, SchemaField};
+use crate::types::node::{I18nValue, NodeDefine};
 
 #[derive(Default)]
 pub struct KeyboardNode {}
@@ -63,6 +64,7 @@ impl NodeDefine for KeyboardNode {
                     "Type".to_string(),
                 ],
                 default: Some("Click".to_string()),
+                condition: None,
             },
             SchemaField {
                 name: "key".to_owned(),
@@ -74,6 +76,7 @@ impl NodeDefine for KeyboardNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
             SchemaField {
                 name: "value".to_owned(),
@@ -85,6 +88,7 @@ impl NodeDefine for KeyboardNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
         ]
     }

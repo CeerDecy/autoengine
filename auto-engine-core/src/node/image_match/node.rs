@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use wasmtime::Enabled::No;
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::field::{BooleanConstraint, Condition, FieldCondition, FieldType, SchemaField, ValueConstraint};
+use crate::types::node::{I18nValue, NodeDefine};
 
 #[derive(Default)]
 pub struct ImageMatchNode;
@@ -54,7 +55,8 @@ impl NodeDefine for ImageMatchNode {
             }),
             enums: vec![],
             default: Some("0.8".to_string()),
-        },SchemaField {
+            condition: None,
+        }, SchemaField {
             name: "cost_time".to_string(),
             field_type: FieldType::Number,
             item_type: None,
@@ -64,7 +66,8 @@ impl NodeDefine for ImageMatchNode {
             }),
             enums: vec![],
             default: Some("0.8".to_string()),
-        },SchemaField {
+            condition: None,
+        }, SchemaField {
             name: "x".to_string(),
             field_type: FieldType::Number,
             item_type: None,
@@ -74,7 +77,8 @@ impl NodeDefine for ImageMatchNode {
             }),
             enums: vec![],
             default: None,
-        },SchemaField {
+            condition: None,
+        }, SchemaField {
             name: "y".to_string(),
             field_type: FieldType::Number,
             item_type: None,
@@ -84,6 +88,7 @@ impl NodeDefine for ImageMatchNode {
             }),
             enums: vec![],
             default: None,
+            condition: None,
         }]
     }
 
@@ -99,6 +104,7 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec![],
                 default: Some("0.8".to_string()),
+                condition: None,
             },
             SchemaField {
                 name: "imread_type".to_string(),
@@ -110,6 +116,7 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec!["Grayscale".to_string(), "Color".to_string()],
                 default: Some("Grayscale".to_string()),
+                condition: None,
             },
             SchemaField {
                 name: "use_screenshot".to_string(),
@@ -121,6 +128,7 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
             SchemaField {
                 name: "resize".to_string(),
@@ -132,6 +140,7 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec![String::from("0.5"), String::from("1"), String::from("2")],
                 default: Some(String::from("1")),
+                condition: None,
             },
             SchemaField {
                 name: "template_image".to_string(),
@@ -143,6 +152,7 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
             SchemaField {
                 name: "source_image".to_string(),
@@ -154,6 +164,13 @@ impl NodeDefine for ImageMatchNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: Some(Condition::Field(FieldCondition{
+                    field: "use_screenshot".to_string(),
+                    constraint: ValueConstraint::Boolean(BooleanConstraint{
+                        equals: false,
+                    }),
+                    required: true,
+                })),
             },
         ]
     }

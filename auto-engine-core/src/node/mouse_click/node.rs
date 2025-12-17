@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::field::{FieldType, SchemaField};
+use crate::types::node::{I18nValue, NodeDefine};
 
 #[derive(Default)]
 pub struct MouseClickNode {}
@@ -57,6 +58,7 @@ impl NodeDefine for MouseClickNode {
             }),
             enums: vec!["left".to_string(), "right".to_string()],
             default: Some("left".to_string()),
+            condition: None,
         }]
     }
 }

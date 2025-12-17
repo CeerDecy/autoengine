@@ -1,5 +1,6 @@
-use crate::types::node::{FieldType, I18nValue, NodeDefine, SchemaField};
+use crate::types::node::{I18nValue, NodeDefine};
 use std::collections::HashMap;
+use crate::types::field::{FieldType, SchemaField};
 
 pub const NODE_TYPE: &str = "DataAggregator";
 
@@ -56,6 +57,7 @@ impl NodeDefine for DataAggregatorNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
             SchemaField {
                 name: "count".to_string(),
@@ -67,6 +69,7 @@ impl NodeDefine for DataAggregatorNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
         ]
     }
@@ -83,6 +86,7 @@ impl NodeDefine for DataAggregatorNode {
                 }),
                 enums: vec!["object".to_string(), "array".to_string()],
                 default: Some("object".to_string()),
+                condition: None,
             },
             SchemaField {
                 name: "sources".to_string(),
@@ -95,6 +99,7 @@ impl NodeDefine for DataAggregatorNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
             SchemaField {
                 name: "keys".to_string(),
@@ -106,6 +111,7 @@ impl NodeDefine for DataAggregatorNode {
                 }),
                 enums: vec![],
                 default: None,
+                condition: None,
             },
         ]
     }

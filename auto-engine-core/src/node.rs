@@ -7,3 +7,4 @@ pub mod start;
 pub mod time_wait;
 #[cfg(feature = "wasm")]
 pub mod wasm;
+mod http;
