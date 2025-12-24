@@ -210,6 +210,18 @@ fn handle_nod(
                 )
             };
 
+            if let Some(condition) = node_schema.metadata.conditions {
+                if !condition.check(&ctx).await? {
+                    emitter
+                        .emit(
+                            NODE_EVENT,
+                            NodeEventPayload::skip::<String>(node_id.clone(), None),
+                        )
+                        .unwrap_or_default();
+                    continue;
+                }
+            }
+
             let action = node_schema.action_type.clone();
 
             let (node, mut runner) = {
