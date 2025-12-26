@@ -38,6 +38,9 @@ impl Conditions {
             && condition != ""
         {
             let condition = utils::parse_variables(ctx, condition).await;
+            if condition == "" {
+                return Ok(false);
+            }
             let result = evalexpr::eval_boolean(&condition)
                 .map_err(|err| format!("{} is not boolean", err))?;
             if !result {
